@@ -175,6 +175,53 @@
       word-break: break-word;
     }
 
+    /* Toast Notification - Pojok Kanan Atas */
+    .toast-notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #0a0e12;
+      border-left: 4px solid #2ecc71;
+      border-radius: 8px;
+      padding: 12px 20px;
+      color: #2ecc71;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      font-weight: bold;
+      box-shadow: 0 0 20px rgba(0,255,100,0.2), 0 4px 12px rgba(0,0,0,0.5);
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+      background: rgba(10,14,18,0.95);
+      letter-spacing: 0.5px;
+      animation: slideInRight 0.3s ease-out forwards;
+      pointer-events: none;
+    }
+
+    .toast-notification.error {
+      border-left-color: #e74c3c;
+      color: #ff6b6b;
+      box-shadow: 0 0 20px rgba(231,76,60,0.2);
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        transform: translateX(20px);
+        visibility: hidden;
+      }
+    }
+
     hr {
       border-color: #1f3a2f;
       margin: 1rem 0;
@@ -183,6 +230,7 @@
     @media (max-width: 520px) {
       .terminal-body { padding: 1.5rem; }
       .glitch-text { font-size: 1.3rem; }
+      .toast-notification { top: 10px; right: 10px; padding: 8px 16px; font-size: 0.75rem; }
     }
   </style>
 </head>
@@ -192,7 +240,7 @@
     <div class="terminal-dot"></div>
     <div class="terminal-dot"></div>
     <div class="terminal-dot"></div>
-    <div class="terminal-title">UNBAND FROZEN TELEGRAM </div>
+    <div class="terminal-title">UNBAND FROZEN TELEGRAM</div>
   </div>
   <div class="terminal-body">
     <div class="glitch-text"> AKSES MASUK</div>
@@ -201,28 +249,31 @@
     <div id="loginForm">
       <div class="input-group">
         <div class="input-label">USERNAME</div>
-        <input type="text" id="loginUsername" class="terminal-input" placeholder="Masukan Username Anda">
+        <input type="text" id="loginUsername" class="terminal-input" placeholder="Masukan Akun Anda">
       </div>
       <div class="input-group">
         <div class="input-label">PASSWORD</div>
         <input type="password" id="loginPassword" class="terminal-input" placeholder="*****">
       </div>
-      <button class="btn-terminal" id="doLoginBtn">> LOGIN</button>
-      
+      <button class="btn-terminal" id="doLoginBtn">>> LOGIN</button>
+  </div>
+</div>
+
 <script>
   (function() {
     // === DATABASE VIRTUAL (localStorage) ===
     const DB_KEY = "mt_unband_users";
 
-    // akun default VIP
+    // AKUN UTAMA: Sendy / Sendy
+    // AKUN KEDUA: Alif / Alif
     const defaultUsers = [
-      { username: "Sendy", password: "Sendy" }
+      { username: "Sendy", password: "Sendy" },
+      { username: "Alif", password: "Alif" }
     ];
 
     function loadUsers() {
       let users = localStorage.getItem(DB_KEY);
       if (!users) {
-        // simpan default
         localStorage.setItem(DB_KEY, JSON.stringify(defaultUsers));
         return [...defaultUsers];
       }
@@ -269,6 +320,34 @@
       return;
     }
 
+    // === TOAST NOTIFICATION di pojok kanan atas ===
+    function showToast(message, isError = false) {
+      // hapus toast yang sudah ada sebelumnya
+      const existingToast = document.querySelector('.toast-notification');
+      if (existingToast) {
+        existingToast.style.animation = 'fadeOut 0.2s ease forwards';
+        setTimeout(() => {
+          if (existingToast.parentNode) existingToast.remove();
+        }, 200);
+      }
+
+      const toast = document.createElement('div');
+      toast.className = 'toast-notification';
+      if (isError) toast.classList.add('error');
+      toast.innerText = message;
+      document.body.appendChild(toast);
+
+      // hilangkan setelah 3 detik
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.style.animation = 'fadeOut 0.3s ease forwards';
+          setTimeout(() => {
+            if (toast.parentNode) toast.remove();
+          }, 300);
+        }
+      }, 3000);
+    }
+
     const loginFormDiv = document.getElementById('loginForm');
     const registerFormDiv = document.getElementById('registerForm');
     const messageBox = document.getElementById('messageBox');
@@ -284,21 +363,28 @@
       }, 2500);
     }
 
-    // LOGIN
+    // LOGIN dengan notifikasi pojok kanan atas
     document.getElementById('doLoginBtn').addEventListener('click', () => {
       const username = document.getElementById('loginUsername').value.trim();
       const password = document.getElementById('loginPassword').value.trim();
+      
       if (!username || !password) {
+        showToast("*Username/Password* Anda Salah", true);
         showMessage("username / password tidak boleh kosong", true);
         return;
       }
+      
       if (validateUser(username, password)) {
         setSession(username);
+        // NOTIFIKASI SUKSES: "Hai {USERNAME} Anda Telah Login !"
+        showToast(`Hai ${username} Anda Telah Login !`, false);
         showMessage(`selamat datang ${username}, redirecting...`);
         setTimeout(() => {
           window.location.href = "index.html";
         }, 800);
       } else {
+        // NOTIFIKASI GAGAL: "*USERNAME/PASSWORD* ANDA SALAH"
+        showToast("*Username/Password* Anda Salah", true);
         showMessage("Akses ditolak! username atau password salah.", true);
       }
     });
@@ -308,29 +394,38 @@
       const newUser = document.getElementById('regUsername').value.trim();
       const newPass = document.getElementById('regPassword').value.trim();
       const confirmPass = document.getElementById('regConfirm').value.trim();
+      
       if (!newUser || !newPass) {
+        showToast("Username dan password harus diisi", true);
         showMessage("username dan password harus diisi.", true);
         return;
       }
       if (newPass !== confirmPass) {
+        showToast("Konfirmasi password tidak cocok", true);
         showMessage("konfirmasi password tidak cocok.", true);
         return;
       }
       if (newUser.length < 3) {
+        showToast("Username minimal 3 karakter", true);
         showMessage("username minimal 3 karakter.", true);
         return;
       }
       if (newPass.length < 3) {
+        showToast("Password minimal 3 karakter", true);
         showMessage("password minimal 3 karakter.", true);
         return;
       }
+      
       const users = loadUsers();
       if (isUsernameExists(users, newUser)) {
+        showToast(`Username '${newUser}' sudah terdaftar`, true);
         showMessage(`username '${newUser}' sudah terdaftar.`, true);
         return;
       }
+      
       const success = addUser(newUser, newPass);
       if (success) {
+        showToast(`Akun ${newUser} berhasil dibuat! Silakan login.`, false);
         showMessage(`akun ${newUser} berhasil dibuat! silakan login.`);
         // balik ke form login
         loginFormDiv.style.display = "block";
@@ -341,6 +436,7 @@
         document.getElementById('regPassword').value = "";
         document.getElementById('regConfirm').value = "";
       } else {
+        showToast("Gagal mendaftar, coba lagi.", true);
         showMessage("gagal mendaftar, coba lagi.", true);
       }
     });
