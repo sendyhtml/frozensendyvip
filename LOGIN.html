@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>APK UNBAND FROZEN</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(ellipse at 20% 30%, #0a0c0f 0%, #030507 100%);
+      font-family: 'Courier New', 'Fira Code', 'JetBrains Mono', monospace;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      position: relative;
+    }
+
+    /* Efek scanline */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(0deg, rgba(0,255,0,0.03) 0px, rgba(0,255,0,0.03) 2px, transparent 2px, transparent 6px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .terminal-container {
+      max-width: 500px;
+      width: 100%;
+      background: #0a0e12;
+      border: 1px solid #1f3a2f;
+      border-radius: 12px;
+      box-shadow: 0 0 30px rgba(0,255,100,0.1), inset 0 1px 0 rgba(255,255,255,0.05);
+      overflow: hidden;
+      position: relative;
+      z-index: 2;
+    }
+
+    .terminal-header {
+      background: #11161c;
+      padding: 0.8rem 1.2rem;
+      border-bottom: 1px solid #1f3a2f;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .terminal-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #2ecc71;
+      box-shadow: 0 0 6px #2ecc71;
+    }
+
+    .terminal-dot:nth-child(2) { background: #f1c40f; box-shadow: 0 0 6px #f1c40f; }
+    .terminal-dot:nth-child(3) { background: #e74c3c; box-shadow: 0 0 6px #e74c3c; }
+
+    .terminal-title {
+      color: #4ade80;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      margin-left: 0.5rem;
+      font-weight: bold;
+    }
+
+    .terminal-body {
+      padding: 2rem 1.8rem;
+    }
+
+    .prompt {
+      color: #2ecc71;
+      font-size: 0.9rem;
+      margin-bottom: 1.8rem;
+      border-left: 3px solid #2ecc71;
+      padding-left: 1rem;
+      font-weight: bold;
+    }
+
+    .glitch-text {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #2ecc71;
+      text-shadow: 0 0 5px #2ecc71;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      letter-spacing: -1px;
+    }
+
+    .input-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .input-label {
+      display: block;
+      color: #6cff9e;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 0.4rem;
+    }
+
+    .terminal-input {
+      width: 100%;
+      background: #030608;
+      border: 1px solid #1f3a2f;
+      padding: 0.8rem 1rem;
+      color: #2ecc71;
+      font-family: monospace;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .terminal-input:focus {
+      border-color: #2ecc71;
+      box-shadow: 0 0 8px rgba(46,204,113,0.3);
+    }
+
+    .btn-terminal {
+      width: 100%;
+      background: #0f1a12;
+      border: 1px solid #2ecc71;
+      padding: 0.8rem;
+      color: #2ecc71;
+      font-family: monospace;
+      font-weight: bold;
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin-top: 0.8rem;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .btn-terminal:hover {
+      background: #2ecc71;
+      color: #030507;
+      box-shadow: 0 0 12px #2ecc71;
+      border-color: #fff;
+    }
+
+    .switch-mode {
+      text-align: center;
+      margin-top: 1.5rem;
+      color: #4a5b6e;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    .switch-mode span {
+      color: #2ecc71;
+      text-decoration: underline;
+    }
+
+    .message-area {
+      margin-top: 1rem;
+      padding: 0.6rem;
+      background: #0b0f14;
+      border-left: 3px solid #2ecc71;
+      font-size: 0.7rem;
+      color: #7c9c8a;
+      word-break: break-word;
+    }
+
+    /* Toast Notification - Pojok Kanan Atas */
+    .toast-notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #0a0e12;
+      border-left: 4px solid #2ecc71;
+      border-radius: 8px;
+      padding: 12px 20px;
+      color: #2ecc71;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      font-weight: bold;
+      box-shadow: 0 0 20px rgba(0,255,100,0.2), 0 4px 12px rgba(0,0,0,0.5);
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+      background: rgba(10,14,18,0.95);
+      letter-spacing: 0.5px;
+      animation: slideInRight 0.3s ease-out forwards;
+      pointer-events: none;
+    }
+
+    .toast-notification.error {
+      border-left-color: #e74c3c;
+      color: #ff6b6b;
+      box-shadow: 0 0 20px rgba(231,76,60,0.2);
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        transform: translateX(20px);
+        visibility: hidden;
+      }
+    }
+
+    hr {
+      border-color: #1f3a2f;
+      margin: 1rem 0;
+    }
+
+    @media (max-width: 520px) {
+      .terminal-body { padding: 1.5rem; }
+      .glitch-text { font-size: 1.3rem; }
+      .toast-notification { top: 10px; right: 10px; padding: 8px 16px; font-size: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="terminal-container">
+  <div class="terminal-header">
+    <div class="terminal-dot"></div>
+    <div class="terminal-dot"></div>
+    <div class="terminal-dot"></div>
+    <div class="terminal-title">UNBAND FROZEN TELEGRAM</div>
+  </div>
+  <div class="terminal-body">
+    <div class="glitch-text"> AKSES MASUK</div>
+    <div class="prompt">$ AUTHENTICATION_LOGIN</div>
+
+    <div id="loginForm">
+      <div class="input-group">
+        <div class="input-label">USERNAME</div>
+        <input type="text" id="loginUsername" class="terminal-input" placeholder="Masukan Username Anda">
+      </div>
+      <div class="input-group">
+        <div class="input-label">PASSWORD</div>
+        <input type="password" id="loginPassword" class="terminal-input" placeholder="*****">
+      </div>
+      <button class="btn-terminal" id="doLoginBtn">>> LOGIN</button>
+      <div class="switch-mode" id="showRegisterBtn">Tidak punya akun? <span>Daftar disini</span></div>
+    </div>
+
+    <div id="registerForm" style="display: none;">
+      <div class="input-group">
+        <div class="input-label">USERNAME BARU</div>
+        <input type="text" id="regUsername" class="terminal-input" placeholder="Minimal 3 karakter">
+      </div>
+      <div class="input-group">
+        <div class="input-label">PASSWORD</div>
+        <input type="password" id="regPassword" class="terminal-input" placeholder="*****">
+      </div>
+      <div class="input-group">
+        <div class="input-label">KONFIRMASI PASSWORD</div>
+        <input type="password" id="regConfirm" class="terminal-input" placeholder="*****">
+      </div>
+      <button class="btn-terminal" id="doRegisterBtn">>> DAFTAR</button>
+      <div class="switch-mode" id="backToLoginBtn"><span>◀ Kembali ke Login</span></div>
+    </div>
+
+    <div class="message-area" id="messageBox">
+      ⚡ terminal ready. masukkan kredensial.
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // === DATABASE VIRTUAL (localStorage) ===
+    const DB_KEY = "mt_unband_users";
+
+    // AKUN UTAMA: Sendy / Sendy
+    // AKUN KEDUA: Alif / Alif
+    const defaultUsers = [
+      { username: "Sendy", password: "Sendy" },
+      { username: "Alif", password: "Alif" }
+    ];
+
+    function loadUsers() {
+      let users = localStorage.getItem(DB_KEY);
+      if (!users) {
+        localStorage.setItem(DB_KEY, JSON.stringify(defaultUsers));
+        return [...defaultUsers];
+      }
+      return JSON.parse(users);
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem(DB_KEY, JSON.stringify(users));
+    }
+
+    function isUsernameExists(users, username) {
+      return users.some(u => u.username.toLowerCase() === username.toLowerCase());
+    }
+
+    function addUser(username, password) {
+      let users = loadUsers();
+      if (isUsernameExists(users, username)) return false;
+      users.push({ username: username.trim(), password: password.trim() });
+      saveUsers(users);
+      return true;
+    }
+
+    function validateUser(username, password) {
+      let users = loadUsers();
+      return users.some(u => u.username === username && u.password === password);
+    }
+
+    // cek session login sebelumnya
+    function isLoggedIn() {
+      return sessionStorage.getItem("mt_logged_user") !== null;
+    }
+
+    function setSession(user) {
+      sessionStorage.setItem("mt_logged_user", user);
+    }
+
+    function clearSession() {
+      sessionStorage.removeItem("mt_logged_user");
+    }
+
+    // redirect ke index jika sudah login
+    if (isLoggedIn()) {
+      window.location.href = "index.html";
+      return;
+    }
+
+    // === TOAST NOTIFICATION di pojok kanan atas ===
+    function showToast(message, isError = false) {
+      // hapus toast yang sudah ada sebelumnya
+      const existingToast = document.querySelector('.toast-notification');
+      if (existingToast) {
+        existingToast.style.animation = 'fadeOut 0.2s ease forwards';
+        setTimeout(() => {
+          if (existingToast.parentNode) existingToast.remove();
+        }, 200);
+      }
+
+      const toast = document.createElement('div');
+      toast.className = 'toast-notification';
+      if (isError) toast.classList.add('error');
+      toast.innerText = message;
+      document.body.appendChild(toast);
+
+      // hilangkan setelah 3 detik
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.style.animation = 'fadeOut 0.3s ease forwards';
+          setTimeout(() => {
+            if (toast.parentNode) toast.remove();
+          }, 300);
+        }
+      }, 3000);
+    }
+
+    const loginFormDiv = document.getElementById('loginForm');
+    const registerFormDiv = document.getElementById('registerForm');
+    const messageBox = document.getElementById('messageBox');
+
+    function showMessage(msg, isError = false) {
+      messageBox.innerHTML = isError ? `❌ ${msg}` : `✔️ ${msg}`;
+      messageBox.style.borderLeftColor = isError ? "#e74c3c" : "#2ecc71";
+      setTimeout(() => {
+        if (messageBox.innerHTML === `✔️ ${msg}` || messageBox.innerHTML === `❌ ${msg}`) {
+          messageBox.style.borderLeftColor = "#2ecc71";
+          if(!isError) messageBox.innerHTML = "⚡ terminal ready. masukkan kredensial.";
+        }
+      }, 2500);
+    }
+
+    // LOGIN dengan notifikasi pojok kanan atas
+    document.getElementById('doLoginBtn').addEventListener('click', () => {
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      
+      if (!username || !password) {
+        showToast("*Username/Password* Anda Salah", true);
+        showMessage("username / password tidak boleh kosong", true);
+        return;
+      }
+      
+      if (validateUser(username, password)) {
+        setSession(username);
+        // NOTIFIKASI SUKSES: "Hai {USERNAME} Anda Telah Login !"
+        showToast(`Hai ${username} Anda Telah Login !`, false);
+        showMessage(`selamat datang ${username}, redirecting...`);
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 800);
+      } else {
+        // NOTIFIKASI GAGAL: "*USERNAME/PASSWORD* ANDA SALAH"
+        showToast("*Username/Password* Anda Salah", true);
+        showMessage("Akses ditolak! username atau password salah.", true);
+      }
+    });
+
+    // REGISTRASI
+    document.getElementById('doRegisterBtn').addEventListener('click', () => {
+      const newUser = document.getElementById('regUsername').value.trim();
+      const newPass = document.getElementById('regPassword').value.trim();
+      const confirmPass = document.getElementById('regConfirm').value.trim();
+      
+      if (!newUser || !newPass) {
+        showToast("Username dan password harus diisi", true);
+        showMessage("username dan password harus diisi.", true);
+        return;
+      }
+      if (newPass !== confirmPass) {
+        showToast("Konfirmasi password tidak cocok", true);
+        showMessage("konfirmasi password tidak cocok.", true);
+        return;
+      }
+      if (newUser.length < 3) {
+        showToast("Username minimal 3 karakter", true);
+        showMessage("username minimal 3 karakter.", true);
+        return;
+      }
+      if (newPass.length < 3) {
+        showToast("Password minimal 3 karakter", true);
+        showMessage("password minimal 3 karakter.", true);
+        return;
+      }
+      
+      const users = loadUsers();
+      if (isUsernameExists(users, newUser)) {
+        showToast(`Username '${newUser}' sudah terdaftar`, true);
+        showMessage(`username '${newUser}' sudah terdaftar.`, true);
+        return;
+      }
+      
+      const success = addUser(newUser, newPass);
+      if (success) {
+        showToast(`Akun ${newUser} berhasil dibuat! Silakan login.`, false);
+        showMessage(`akun ${newUser} berhasil dibuat! silakan login.`);
+        // balik ke form login
+        loginFormDiv.style.display = "block";
+        registerFormDiv.style.display = "none";
+        document.getElementById('loginUsername').value = newUser;
+        document.getElementById('loginPassword').value = "";
+        document.getElementById('regUsername').value = "";
+        document.getElementById('regPassword').value = "";
+        document.getElementById('regConfirm').value = "";
+      } else {
+        showToast("Gagal mendaftar, coba lagi.", true);
+        showMessage("gagal mendaftar, coba lagi.", true);
+      }
+    });
+
+    // Toggle forms
+    document.getElementById('showRegisterBtn').addEventListener('click', () => {
+      loginFormDiv.style.display = "none";
+      registerFormDiv.style.display = "block";
+      messageBox.innerHTML = "⚡ formulir pendaftaran akun baru.";
+    });
+
+    document.getElementById('backToLoginBtn').addEventListener('click', () => {
+      registerFormDiv.style.display = "none";
+      loginFormDiv.style.display = "block";
+      messageBox.innerHTML = "⚡ terminal ready. masukkan kredensial.";
+    });
+  })();
+</script>
+</body>
+</html>
